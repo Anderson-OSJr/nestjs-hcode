@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//O nome gerado automaticamente foi o "model user"
+//modifiquei para "model User", para ficar no padrão.
+//com isso, tem que inserir no final o "@@map("users")"
+model User {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  name      String   @db.VarChar(63)
+  email     String   @db.VarChar(127)
+  password  String   @db.VarChar(127)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0)
+
+  @@map("users")
+}
