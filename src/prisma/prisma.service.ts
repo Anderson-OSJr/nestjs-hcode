@@ -8,7 +8,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit{
     // esse código abaixo fica disponível na documentação do Nest e do Prisma
 
     async onModuleInit() {
-        this.$connect;
+        await this.$connect();
     }
 
     async enableShutdownHooks(app: INestApplication) {
