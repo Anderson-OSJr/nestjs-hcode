@@ -25,6 +25,9 @@ export class UsersService {
 
   //lists only one user selected by ID.
   async listUserByID(id: number) {
+
+    await this.isIdListed(id);
+
     return this.prisma.user.findUnique({
       where: {
         id,
@@ -34,8 +37,11 @@ export class UsersService {
 
   // To check ID existence, to avoid errors.
   async isIdListed(id: number) {
-    if(!(await this.listUserByID(id))) {
-      throw new NotFoundException(`User with ID ${id} was not found.`);
+    if(!(await this.prisma.user.count({
+      where: {
+        id,
+      }}))) {
+        throw new NotFoundException(`User with ID ${id} was not found.`);
     }
   }  
 
