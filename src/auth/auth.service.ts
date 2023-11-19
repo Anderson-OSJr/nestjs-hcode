@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -14,6 +14,15 @@ export class AuthService {
               private readonly prisma: PrismaService,
               private readonly userService: UsersService,
   ) {}
+
+  /* List of Methods:
+    - async createToken(user: User)
+    - async checkToken(token: string)
+    - async login(email: string, password: string)
+    - async forgottenPassword(email: string)
+    - async reset(password: string, token: string)
+    - async register(data: AuthRegisterDTO)
+   */
 
   async createToken(user: User) {
     return {
@@ -30,10 +39,24 @@ export class AuthService {
     };
   }
 
+  //-------------------------------------------//
   async checkToken(token: string) {
-    return this.jwtService.verify(token);
+    //Try & Catch block to avoid ERROR message due to invalid token.
+    try {
+
+      const data = this.jwtService.verify(token, {
+        audience: 'users',
+        issuer: 'login',
+      }); 
+
+      return data;   
+
+    } catch (e) {
+      throw new BadRequestException(e);
+    }    
   }
 
+  //-------------------------------------------//
   async login(email: string, password: string) {
     
     const user = await this.prisma.user.findFirst({
@@ -50,6 +73,7 @@ export class AuthService {
     return this.createToken(user);
   }
   
+  //-------------------------------------------//
   async forgottenPassword(email: string) {
 
     const user = await this.prisma.user.findFirst({
@@ -66,6 +90,7 @@ export class AuthService {
     return true;
   }
 
+  //-------------------------------------------//
   async reset(password: string, token: string) {
 
     // TO DO: only to validate the token.
@@ -83,6 +108,7 @@ export class AuthService {
     return this.createToken(user);
   }
 
+  //-------------------------------------------//
   async register(data: AuthRegisterDTO) {
 
     const user = await this.userService.create(data);
