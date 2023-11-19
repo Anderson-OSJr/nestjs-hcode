@@ -5,13 +5,13 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { TokenSignature } from 'myEnv';
+import { MyEnv } from 'myEnv';
 
 
-const tokenSignature = String(new TokenSignature());
+const tokenSignature = String(new MyEnv().tokenSignature);
 @Module({
   imports: [
-    TokenSignature,
+    MyEnv,
     JwtModule.register({
       secret: tokenSignature,
     }),
