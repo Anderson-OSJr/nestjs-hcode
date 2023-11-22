@@ -7,7 +7,6 @@ import { UsersModule } from 'src/users/users.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { MyEnv } from 'myEnv';
 
-
 const tokenSignature = String(new MyEnv().tokenSignature);
 @Module({
   imports: [

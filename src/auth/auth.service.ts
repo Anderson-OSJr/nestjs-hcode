@@ -8,6 +8,9 @@ import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
+
+  private issuer = 'login';
+  private audience = 'users';
   
   constructor(
               private readonly jwtService: JwtService,
@@ -16,15 +19,16 @@ export class AuthService {
   ) {}
 
   /* List of Methods:
-    - async createToken(user: User)
-    - async checkToken(token: string)
+    - createToken(user: User)
+    - checkToken(token: string)
+    - isValidToken(token: string)
     - async login(email: string, password: string)
     - async forgottenPassword(email: string)
     - async reset(password: string, token: string)
     - async register(data: AuthRegisterDTO)
    */
 
-  async createToken(user: User) {
+  createToken(user: User) {
     return {
       accessToken: this.jwtService.sign({
         id: user.id,
@@ -33,20 +37,20 @@ export class AuthService {
       }, {
         expiresIn:'7 days',
         subject: String(user.id),
-        issuer: 'login',
-        audience: 'users'
+        issuer: this.issuer,
+        audience: this.audience,
       })
     };
   }
 
   //-------------------------------------------//
-  async checkToken(token: string) {
+  checkToken(token: string) {
     //Try & Catch block to avoid ERROR message due to invalid token.
     try {
 
       const data = this.jwtService.verify(token, {
-        audience: 'users',
-        issuer: 'login',
+        issuer: this.issuer,
+        audience: this.audience,
       }); 
 
       return data;   
@@ -54,6 +58,16 @@ export class AuthService {
     } catch (e) {
       throw new BadRequestException(e);
     }    
+  }
+
+  //-------------------------------------------//
+  isValidToken(token: string) {
+    try {
+      this.checkToken(token);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   //-------------------------------------------//
